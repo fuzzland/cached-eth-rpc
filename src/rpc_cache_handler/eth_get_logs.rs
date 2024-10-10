@@ -1,7 +1,5 @@
-use alloy_primitives::B256;
 use anyhow::{bail, Context};
 use serde_json::Value;
-use std::str::FromStr;
 
 use crate::rpc_cache_handler::common::require_array_params;
 use crate::rpc_cache_handler::{common, RpcCacheHandler};
@@ -25,13 +23,14 @@ impl RpcCacheHandler for Handler {
             bail!("params[0] not a filter object");
         }
 
-        let mut block_tag = None;
-
-        if let Some(block_hash) = filter["blockHash"].as_str() {
-            if let Ok(block_hash) = B256::from_str(block_hash) {
-                block_tag = Some(format!("{:#x}", block_hash));
-            }
-        }
+        let mut block_tag = if !filter["blockHash"].is_null() {
+            Some(
+                common::extract_and_format_block_hash(&filter["blockHash"])
+                    .context("expect a valid block hash")?,
+            )
+        } else {
+            None
+        };
 
         if block_tag.is_none() {
             let from_block = if !filter["fromBlock"].is_null() {

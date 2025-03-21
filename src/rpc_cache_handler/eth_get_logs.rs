@@ -16,9 +16,6 @@ impl RpcCacheHandler for Handler {
 
     fn extract_cache_key(&self, params: &Value) -> anyhow::Result<Option<String>> {
         let params = &require_array_params(params, common::ParamsSpec::Exact(1))?;
-
-        println!("params: {:?}", params);
-
         let filter = &params[0];
 
         if !filter.is_object() {

@@ -4,10 +4,10 @@ use actix_web::{error, web, App, Error, HttpResponse, HttpServer};
 use anyhow::Context;
 use cache::{memory_backend, CacheBackendFactory};
 use clap::Parser;
-use env_logger::Env;
 use reqwest::Url;
 use serde::Serialize;
 use serde_json::{json, Value};
+use tracing_subscriber::EnvFilter;
 
 use crate::args::Args;
 use crate::cache::redis_backend::RedisBackendFactory;
@@ -296,9 +296,19 @@ fn extract_single_request_info(
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    env_logger::init_from_env(Env::default().default_filter_or("info"));
-
     let args = Args::parse();
+
+    // Initialize tracing
+    if std::env::var("RUST_LOG_FORMAT") == Ok("json".to_string()) {
+        tracing_subscriber::fmt()
+            .with_env_filter(EnvFilter::from_default_env())
+            .json()
+            .init();
+    } else {
+        tracing_subscriber::fmt()
+            .with_env_filter(EnvFilter::from_default_env())
+            .init();
+    }
 
     let mut app_state = AppState {
         chains: Default::default(),

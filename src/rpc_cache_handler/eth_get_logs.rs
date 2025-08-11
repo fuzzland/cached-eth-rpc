@@ -1,5 +1,5 @@
 use alloy_primitives::B256;
-use anyhow::{bail, Context};
+use eyre::{bail, Context};
 use serde_json::Value;
 use std::str::FromStr;
 
@@ -14,7 +14,7 @@ impl RpcCacheHandler for Handler {
         "eth_getLogs"
     }
 
-    fn extract_cache_key(&self, params: &Value) -> anyhow::Result<Option<String>> {
+    fn extract_cache_key(&self, params: &Value) -> eyre::Result<Option<String>> {
         let params = &require_array_params(params, common::ParamsSpec::Exact(1))?;
         let filter = &params[0];
 

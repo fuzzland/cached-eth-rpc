@@ -1,4 +1,4 @@
-use anyhow::Context;
+use eyre::{Context, ContextCompat as _};
 use serde_json::Value;
 
 use crate::rpc_cache_handler::{common, RpcCacheHandler};
@@ -11,7 +11,7 @@ impl RpcCacheHandler for Handler {
         "eth_getBlockByNumber"
     }
 
-    fn extract_cache_key(&self, params: &Value) -> anyhow::Result<Option<String>> {
+    fn extract_cache_key(&self, params: &Value) -> eyre::Result<Option<String>> {
         let params = common::require_array_params(params, common::ParamsSpec::AtLeast(1))?;
 
         let block_number = common::extract_and_format_block_number(&params[0])

@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
 use actix_web::{error, web, App, Error, HttpResponse, HttpServer};
-use anyhow::Context;
 use cache::{memory_backend, CacheBackendFactory};
 use clap::Parser;
 use env_logger::Env;
+use eyre::Context;
 use reqwest::Url;
 use serde::Serialize;
 use serde_json::{json, Value};
@@ -214,7 +214,7 @@ async fn rpc_call(
 
     for (index, mut response) in result_values.into_iter().enumerate() {
         let rpc_request = match RequestId::try_from(response["id"].clone()) {
-            Ok(id) if request_id_index_map.get(&id).is_some() => {
+            Ok(id) if request_id_index_map.contains_key(&id) => {
                 &uncached_requests[*request_id_index_map.get(&id).unwrap()]
             }
             _ => {
@@ -354,7 +354,7 @@ async fn main() -> std::io::Result<()> {
 fn new_cache_backend_factory(
     args: &Args,
     chain_id: u64,
-) -> anyhow::Result<Box<dyn CacheBackendFactory>> {
+) -> eyre::Result<Box<dyn CacheBackendFactory>> {
     let factory: Box<dyn CacheBackendFactory> = match &args.redis_url {
         Some(redis_url) => {
             tracing::info!("Using redis cache backend");

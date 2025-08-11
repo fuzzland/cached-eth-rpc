@@ -12,11 +12,11 @@ impl RpcCacheHandler for Handler {
         "eth_getTransactionByHash"
     }
 
-    fn extract_cache_key(&self, params: &Value) -> anyhow::Result<Option<String>> {
+    fn extract_cache_key(&self, params: &Value) -> eyre::Result<Option<String>> {
         self.inner.extract_cache_key(params)
     }
 
-    fn extract_cache_value(&self, result: &Value) -> anyhow::Result<(bool, String)> {
+    fn extract_cache_value(&self, result: &Value) -> eyre::Result<(bool, String)> {
         common::extract_transaction_cache_value(result)
     }
 }

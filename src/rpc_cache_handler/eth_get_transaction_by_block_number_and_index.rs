@@ -1,5 +1,5 @@
 use alloy_primitives::U64;
-use anyhow::Context;
+use eyre::Context;
 use serde_json::Value;
 
 use crate::rpc_cache_handler::{common, RpcCacheHandler};
@@ -12,7 +12,7 @@ impl RpcCacheHandler for Handler {
         "eth_getTransactionByBlockNumberAndIndex"
     }
 
-    fn extract_cache_key(&self, params: &Value) -> anyhow::Result<Option<String>> {
+    fn extract_cache_key(&self, params: &Value) -> eyre::Result<Option<String>> {
         let params = common::require_array_params(params, common::ParamsSpec::Exact(2))?;
 
         let block_number = common::extract_and_format_block_number(&params[0])
@@ -28,7 +28,7 @@ impl RpcCacheHandler for Handler {
         Ok(Some(format!("{block_number}-{tx_index}")))
     }
 
-    fn extract_cache_value(&self, result: &Value) -> anyhow::Result<(bool, String)> {
+    fn extract_cache_value(&self, result: &Value) -> eyre::Result<(bool, String)> {
         common::extract_transaction_cache_value(result)
     }
 }

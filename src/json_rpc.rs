@@ -12,20 +12,20 @@ pub struct RequestId {
 }
 
 impl TryFrom<Value> for RequestId {
-    type Error = anyhow::Error;
+    type Error = eyre::Error;
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
             Value::Number(number) => number
                 .as_u64()
-                .ok_or(anyhow::anyhow!("invalid request id"))
+                .ok_or(eyre::eyre!("invalid request id"))
                 .map(|number| Self {
                     id: StringOrNumber::Number(number),
                 }),
             Value::String(string) => Ok(Self {
                 id: StringOrNumber::String(string),
             }),
-            _ => Err(anyhow::anyhow!("invalid request id")),
+            _ => Err(eyre::eyre!("invalid request id")),
         }
     }
 }

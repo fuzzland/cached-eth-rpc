@@ -1,4 +1,4 @@
-use anyhow::{bail, Context};
+use eyre::{bail, Context, ContextCompat as _};
 use serde_json::Value;
 
 use crate::rpc_cache_handler::{common, RpcCacheHandler};
@@ -11,7 +11,7 @@ impl RpcCacheHandler for Handler {
         "eth_call"
     }
 
-    fn extract_cache_key(&self, params: &Value) -> anyhow::Result<Option<String>> {
+    fn extract_cache_key(&self, params: &Value) -> eyre::Result<Option<String>> {
         let params = common::require_array_params(params, common::ParamsSpec::AtLeast(1))?;
 
         let tx = serde_json::to_string(

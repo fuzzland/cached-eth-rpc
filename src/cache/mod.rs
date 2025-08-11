@@ -9,10 +9,10 @@ pub enum CacheStatus {
 }
 
 pub trait CacheBackendFactory: Send + Sync {
-    fn get_instance(&self) -> anyhow::Result<Box<dyn CacheBackend>>;
+    fn get_instance(&self) -> eyre::Result<Box<dyn CacheBackend>>;
 }
 
 pub trait CacheBackend {
-    fn read(&mut self, method: &str, params_key: &str) -> anyhow::Result<CacheStatus>;
-    fn write(&mut self, key: &str, value: &str) -> anyhow::Result<()>;
+    fn read(&mut self, method: &str, params_key: &str) -> eyre::Result<CacheStatus>;
+    fn write(&mut self, key: &str, value: &str) -> eyre::Result<()>;
 }

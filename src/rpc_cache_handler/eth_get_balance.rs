@@ -10,7 +10,7 @@ impl RpcCacheHandler for Handler {
         "eth_getBalance"
     }
 
-    fn extract_cache_key(&self, params: &Value) -> anyhow::Result<Option<String>> {
+    fn extract_cache_key(&self, params: &Value) -> eyre::Result<Option<String>> {
         common::extract_address_cache_key(params)
     }
 }

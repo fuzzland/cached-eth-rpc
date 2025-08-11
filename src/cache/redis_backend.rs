@@ -1,4 +1,4 @@
-use anyhow::Context;
+use eyre::Context;
 use redis::Commands;
 use serde_json::{from_str, Value};
 
@@ -16,7 +16,7 @@ impl RedisBackendFactory {
 }
 
 impl CacheBackendFactory for RedisBackendFactory {
-    fn get_instance(&self) -> anyhow::Result<Box<dyn CacheBackend>> {
+    fn get_instance(&self) -> eyre::Result<Box<dyn CacheBackend>> {
         Ok(Box::new(RedisBackend {
             chain_id: self.chain_id,
             conn: self.client.get()?,
@@ -30,7 +30,7 @@ pub struct RedisBackend {
 }
 
 impl CacheBackend for RedisBackend {
-    fn read(&mut self, method: &str, params_key: &str) -> anyhow::Result<CacheStatus> {
+    fn read(&mut self, method: &str, params_key: &str) -> eyre::Result<CacheStatus> {
         let cache_key = format!("{}:{method}:{params_key}", self.chain_id);
         let value: Option<String> = self.conn.get(&cache_key)?;
 
@@ -48,7 +48,7 @@ impl CacheBackend for RedisBackend {
         Ok(v)
     }
 
-    fn write(&mut self, key: &str, value: &str) -> anyhow::Result<()> {
+    fn write(&mut self, key: &str, value: &str) -> eyre::Result<()> {
         let _ = self.conn.set::<_, _, String>(key, value);
         Ok(())
     }

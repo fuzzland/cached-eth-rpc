@@ -1,5 +1,5 @@
 use alloy_primitives::{Address, U256};
-use anyhow::{bail, Context};
+use eyre::{bail, Context};
 use serde_json::Value;
 
 use crate::rpc_cache_handler::{common, RpcCacheHandler};
@@ -12,7 +12,7 @@ impl RpcCacheHandler for Handler {
         "eth_getStorageAt"
     }
 
-    fn extract_cache_key(&self, params: &Value) -> anyhow::Result<Option<String>> {
+    fn extract_cache_key(&self, params: &Value) -> eyre::Result<Option<String>> {
         let params = common::require_array_params(params, common::ParamsSpec::AtLeast(2))?;
 
         let block_tag = common::extract_and_format_block_tag(&params[2])
@@ -36,7 +36,7 @@ impl RpcCacheHandler for Handler {
 
             Value::Number(ref n) => n
                 .as_u64()
-                .ok_or(anyhow::anyhow!("params[1] not a valid slot value"))?
+                .ok_or(eyre::eyre!("params[1] not a valid slot value"))?
                 .to_string(),
 
             _ => bail!("params[1] not a valid slot value"),

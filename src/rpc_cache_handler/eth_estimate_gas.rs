@@ -12,7 +12,7 @@ impl RpcCacheHandler for Handler {
         "eth_estimateGas"
     }
 
-    fn extract_cache_key(&self, params: &Value) -> anyhow::Result<Option<String>> {
+    fn extract_cache_key(&self, params: &Value) -> eyre::Result<Option<String>> {
         self.inner.extract_cache_key(params)
     }
 }

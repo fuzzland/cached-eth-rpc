@@ -1,5 +1,5 @@
 use alloy_primitives::B256;
-use anyhow::Context;
+use eyre::Context;
 use serde_json::Value;
 
 use crate::rpc_cache_handler::{common, RpcCacheHandler};
@@ -12,7 +12,7 @@ impl RpcCacheHandler for Handler {
         "eth_getTransactionReceipt"
     }
 
-    fn extract_cache_key(&self, params: &Value) -> anyhow::Result<Option<String>> {
+    fn extract_cache_key(&self, params: &Value) -> eyre::Result<Option<String>> {
         let params = common::require_array_params(params, common::ParamsSpec::Exact(1))?;
         let tx_hash: B256 = serde_json::from_value(params[0].clone())
             .context("params[0] is not a valid transaction hash")?;
@@ -20,7 +20,7 @@ impl RpcCacheHandler for Handler {
         Ok(Some(format!("{tx_hash:#x}")))
     }
 
-    fn extract_cache_value(&self, result: &Value) -> anyhow::Result<(bool, String)> {
+    fn extract_cache_value(&self, result: &Value) -> eyre::Result<(bool, String)> {
         common::extract_transaction_cache_value(result)
     }
 }

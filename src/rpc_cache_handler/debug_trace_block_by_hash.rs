@@ -1,4 +1,4 @@
-use anyhow::Context;
+use eyre::{Context, ContextCompat as _};
 use serde_json::Value;
 
 use crate::rpc_cache_handler::common::ParamsSpec;
@@ -12,7 +12,7 @@ impl RpcCacheHandler for Handler {
         "debug_traceBlockByHash"
     }
 
-    fn extract_cache_key(&self, params: &Value) -> anyhow::Result<Option<String>> {
+    fn extract_cache_key(&self, params: &Value) -> eyre::Result<Option<String>> {
         let params = common::require_array_params(params, ParamsSpec::AtLeast(1))?;
 
         let block_hash = common::extract_and_format_block_hash(&params[0])

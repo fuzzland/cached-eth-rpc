@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use alloy_primitives::{Address, B256, U64};
-use anyhow::{bail, Context};
+use eyre::{bail, Context, ContextCompat as _};
 use serde_json::Value;
 use sha1::Digest;
 
@@ -10,15 +10,15 @@ pub enum ParamsSpec {
     AtLeast(usize),
 }
 
-pub fn require_array_params(params: &Value, len: ParamsSpec) -> anyhow::Result<&Vec<Value>> {
+pub fn require_array_params(params: &Value, len: ParamsSpec) -> eyre::Result<&Vec<Value>> {
     let array = params.as_array().context("expect params to be an array")?;
 
     match len {
         ParamsSpec::Exact(expected_len) if array.len() != expected_len => {
-            anyhow::bail!("expected {} params, got {}", expected_len, array.len());
+            eyre::bail!("expected {} params, got {}", expected_len, array.len());
         }
         ParamsSpec::AtLeast(expected_len) if array.len() < expected_len => {
-            anyhow::bail!(
+            eyre::bail!(
                 "expected at least {} params, got {}",
                 expected_len,
                 array.len()
@@ -30,7 +30,7 @@ pub fn require_array_params(params: &Value, len: ParamsSpec) -> anyhow::Result<&
     Ok(array)
 }
 
-pub fn extract_address_cache_key(params: &Value) -> anyhow::Result<Option<String>> {
+pub fn extract_address_cache_key(params: &Value) -> eyre::Result<Option<String>> {
     let params = require_array_params(params, ParamsSpec::AtLeast(1))?;
 
     let account: Address =
@@ -48,13 +48,13 @@ pub fn extract_address_cache_key(params: &Value) -> anyhow::Result<Option<String
     Ok(Some(format!("{block_tag}-{lowercase_address}")))
 }
 
-pub fn extract_transaction_cache_value(result: &Value) -> anyhow::Result<(bool, String)> {
+pub fn extract_transaction_cache_value(result: &Value) -> eyre::Result<(bool, String)> {
     let can_cache = result.is_object() && !result["blockHash"].is_null();
 
     Ok((can_cache, serde_json::to_string(result)?))
 }
 
-pub fn extract_and_format_block_number(value: &Value) -> anyhow::Result<Option<String>> {
+pub fn extract_and_format_block_number(value: &Value) -> eyre::Result<Option<String>> {
     let value = value.as_str().context("block tag not a string")?;
 
     let block_tag = match value {
@@ -70,7 +70,7 @@ pub fn extract_and_format_block_number(value: &Value) -> anyhow::Result<Option<S
     Ok(block_tag)
 }
 
-pub fn extract_and_format_block_hash(value: &Value) -> anyhow::Result<String> {
+pub fn extract_and_format_block_hash(value: &Value) -> eyre::Result<String> {
     let value_str = value.as_str().context("block tag not a string")?;
 
     if value_str.len() != 66 {
@@ -81,7 +81,7 @@ pub fn extract_and_format_block_hash(value: &Value) -> anyhow::Result<String> {
     Ok(format!("{block_hash:#x}"))
 }
 
-pub fn extract_and_format_block_tag(value: &Value) -> anyhow::Result<Option<String>> {
+pub fn extract_and_format_block_tag(value: &Value) -> eyre::Result<Option<String>> {
     let value_str = value.as_str().context("block tag not a string")?;
 
     if value_str.len() == 66 {

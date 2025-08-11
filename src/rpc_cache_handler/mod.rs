@@ -1,4 +1,4 @@
-use anyhow::Result;
+use eyre::Result;
 use serde_json::Value;
 
 mod common;

@@ -10,7 +10,7 @@ impl RpcCacheHandler for Handler {
         "eth_chainId"
     }
 
-    fn extract_cache_key(&self, _: &Value) -> anyhow::Result<Option<String>> {
+    fn extract_cache_key(&self, _: &Value) -> eyre::Result<Option<String>> {
         Ok(Some("static".to_string()))
     }
 }
